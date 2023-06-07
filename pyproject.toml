@@ -41,6 +41,8 @@ path = "src/choosy/__about__.py"
 dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
+  "numpy",
+  "pandas",
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
