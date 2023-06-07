@@ -5,8 +5,12 @@
 
 import pandas as pd
 import pytest
+import os
 
-from choosy import StructuredSampler
+# Add the parent directory to the path so we can import from src
+
+os.sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.choosy import StructuredSampler
 
 @pytest.fixture
 def data():
