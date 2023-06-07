@@ -24,7 +24,10 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = [
+  "pandas",
+  "numpy",
+]
 
 [project.urls]
 Documentation = "https://github.com/ceesem/choosy#readme"
@@ -38,7 +41,6 @@ path = "src/choosy/__about__.py"
 dependencies = [
   "coverage[toml]>=6.5",
   "pytest",
-  "pandas",
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
