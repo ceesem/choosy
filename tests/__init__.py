@@ -6,7 +6,7 @@
 import pandas as pd
 import pytest
 
-from structured_sampler import StructuredSampler
+from choosy import StructuredSampler
 
 @pytest.fixture
 def data():
