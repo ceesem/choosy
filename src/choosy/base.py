@@ -14,7 +14,6 @@ class StructuredSampler:
         data: pd.DataFrame,
         bin_column: Optional[Union[str, List[str]]] = None,
         weight_column: Optional[str] = None,
-        seed: Optional[int] = None,
     ):
         """
         Set up a dataframe for sampling.
@@ -31,14 +30,13 @@ class StructuredSampler:
             Seed for the random number generator. Default is None.
         """
         self._data = data
-        self._seed = seed
         self._weight_column = weight_column
         self._bin_column = bin_column
 
     def sample_data(
         self,
         n_sample: Union[int, Dict, pd.Series],
-        count_column: str = None,
+        count_column: Optional[str] = None,
         bin_column: Optional[Union[str, List[str]]] = None,
         weight_column: Optional[str] = None,
         replace: Optional[bool] = True,
@@ -76,23 +74,34 @@ class StructuredSampler:
             A dataframe sampled from the original. If count_column is not None, the dataframe is aggregated by values
             from that column, otherwise the dataframe rows are returned directly.
         """
-        if not seed:
-            seed = self._seed
         if bin_column is None:
             bin_column = self._bin_column
         if weight_column is None:
             weight_column = self._weight_column
         dfs = []
         if isinstance(n_sample, int):
-            dfs.append(
-                self._simple_sample(
-                    n_sample,
-                    None,
-                    replace=replace,
-                    seed=seed,
-                    weight=weight_column,
+            if bin_column is None:
+                dfs.append(
+                    self._simple_sample(
+                        n_sample,
+                        None,
+                        replace=replace,
+                        seed=seed,
+                        weight=weight_column,
+                    )
                 )
-            )
+            else:
+                bin_values = np.unique(self._data[bin_column])
+                for bin_value in bin_values:
+                    dfs.append(
+                        self._simple_sample(
+                            n_sample,
+                            self._format_filter(bin_column, bin_value),
+                            replace=replace,
+                            seed=seed,
+                            weight=weight_column,
+                        )
+                    )
         elif isinstance(n_sample, dict):
             if bin_column is None:
                 msg = "No bin column is set!"
@@ -118,7 +127,7 @@ class StructuredSampler:
                         self._format_filter(bin_column, index_val),
                         replace=replace,
                         seed=seed,
-                        weight_column=weight_column,
+                        weight=weight_column,
                     )
                 )
         else:
@@ -132,6 +141,7 @@ class StructuredSampler:
         n_sample: Union[int, Dict, pd.Series],
         count_column: str,
         bin_column: Optional[Union[str, List[str]]] = None,
+        weight_column: Optional[str] = None,
         replace: Optional[bool] = True,
         seed: Optional[int] = None,
     ):
@@ -155,6 +165,8 @@ class StructuredSampler:
             Column to use for binning. Values in this column must match values in the n_sample dict or series.
             Bin column can be a list of strings if n_sample is a series with a multi-level index.
             Optional, default is None.
+        weight_column : str, optional
+            Column to use for sample weighting. Optional, default is None.
         replace : bool, optional
             Chooses whether to sample with replacement, by default True
         seed : int, optional
@@ -172,6 +184,7 @@ class StructuredSampler:
                     n_sample=n_sample,
                     count_column=count_column,
                     bin_column=bin_column,
+                    weight_column=weight_column,
                     replace=replace,
                     seed=seed,
                     column_name=f"{ii}",
@@ -187,7 +200,7 @@ class StructuredSampler:
         if count_column is None:
             return df
         else:
-            return df.groupby(count_column).agg(**{name: pd.NamedAgg(column=count_column, aggfunc="count")})
+            return df.groupby(count_column).agg(**{name: pd.NamedAgg(column=count_column, aggfunc="count")}).fillna(0)
 
     def _format_filter(self, columns, values):
         "Format the filter for the query method."

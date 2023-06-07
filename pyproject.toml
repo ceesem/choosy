@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "structured-sampler"
+name = "choosy"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
@@ -27,12 +27,12 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/unknown/structured-sampler#readme"
-Issues = "https://github.com/unknown/structured-sampler/issues"
-Source = "https://github.com/unknown/structured-sampler"
+Documentation = "https://github.com/ceesem/choosy#readme"
+Issues = "https://github.com/ceesem/choosy/issues"
+Source = "https://github.com/ceesem/choosy"
 
 [tool.hatch.version]
-path = "src/structured_sampler/__about__.py"
+path = "src/choosy/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -63,7 +63,7 @@ dependencies = [
   "ruff>=0.0.243",
 ]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/structured_sampler tests}"
+typing = "mypy --install-types --non-interactive {args:src/choosy tests}"
 style = [
   "ruff {args:.}",
   "black --check --diff {args:.}",
@@ -129,7 +129,7 @@ unfixable = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["structured_sampler"]
+known-first-party = ["choosy"]
 
 [tool.ruff.flake8-tidy-imports]
 ban-relative-imports = "all"
@@ -139,15 +139,15 @@ ban-relative-imports = "all"
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
 [tool.coverage.run]
-source_pkgs = ["structured_sampler", "tests"]
+source_pkgs = ["choosy", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/structured_sampler/__about__.py",
+  "src/choosy/__about__.py",
 ]
 
 [tool.coverage.paths]
-structured_sampler = ["src/structured_sampler", "*/structured-sampler/src/structured_sampler"]
+choosy = ["src/choosy", "*/structured-sampler/src/choosy"]
 tests = ["tests", "*/structured-sampler/tests"]
 
 [tool.coverage.report]
