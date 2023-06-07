@@ -151,8 +151,8 @@ omit = [
 ]
 
 [tool.coverage.paths]
-choosy = ["src/choosy", "*/structured-sampler/src/choosy"]
-tests = ["tests", "*/structured-sampler/tests"]
+choosy = ["src/choosy", "*/choosy/src/choosy"]
+tests = ["tests", "*/choosy/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
