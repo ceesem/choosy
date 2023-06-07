@@ -190,7 +190,7 @@ class StructuredSampler:
                     column_name=f"{ii}",
                 ).T
             )
-        out = pd.concat(dfs, axis=0)
+        out = pd.concat(dfs, axis=0).fillna(0)
         out.index = out.index.astype(int)
         return out
 
@@ -200,7 +200,7 @@ class StructuredSampler:
         if count_column is None:
             return df
         else:
-            return df.groupby(count_column).agg(**{name: pd.NamedAgg(column=count_column, aggfunc="count")}).fillna(0)
+            return df.groupby(count_column).agg(**{name: pd.NamedAgg(column=count_column, aggfunc="count")})
 
     def _format_filter(self, columns, values):
         "Format the filter for the query method."
