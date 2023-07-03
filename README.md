@@ -127,13 +127,15 @@ sampler.sample_repeat(
 * If you plan to always sample using the same `bin_column`, you can also specify this value in the `StructuredSampler` constructor.
 This will save you from having to specify it in every call to `sample_data`.
 
+* A count column can now be specified in the StructuredSampler initialization for simplicity.
+
 * You can also specify a `weight_column` in either the constructor or the `sample_data`/`sample_repeat` methods to weight the sampling by the values in that column, which is passed through the `pd.sample`.
 
-* By default, `choosy` uses sampling with replacement unless `replace=False` is specified in methods.
+* `choosy` currently requires sampling with replacement. 
 
-* A `seed` can be specified in the methods to make the sampling reproducible.
+* A `seed` can be specified in the StructuredSampler initialization to make sampling reproducible.
 
-* The code is primarily for convenience for flexible sampling from the same dataframe, and has not been optimized for speed at this time.
+* As of version 0.0.4, sampling has been optimized for speed by using numpy.random.choose on an array of indices.
 
 ## License
 

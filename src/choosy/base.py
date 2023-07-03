@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 import pandas as pd
 
+
 def _is_array_like(value):
     if isinstance(value, str):
         return False
@@ -71,7 +72,6 @@ class StructuredSampler:
         count_column: Optional[str] = None,
         bin_column: Optional[Union[str, List[str]]] = None,
         weight_column: Optional[str] = None,
-        replace: Optional[bool] = True,
         column_name: Optional[str] = "sample_count",
     ):
         """
@@ -92,8 +92,6 @@ class StructuredSampler:
         bin_column : str or list.
             Column to use for binning. Values in this column must match values in the n_sample dict or series.
             Bin column can be a list of strings if n_sample is a series with a multi-level index.
-        replace: bool, optional.
-            Chooses whether to sample data with replacement or not. Default is True.
         column_name: str, optional.
             Name of the column to use for the aggregated count column. Default is "sample_count".
 
@@ -108,7 +106,7 @@ class StructuredSampler:
         if weight_column is None:
             weight_column = self._weight_column
         dfs, ns, weights = self._build_stratification(n_sample, bin_column, weight_column)
-        inds = self._stratified_indices(dfs, ns, weights, n_repeats=1, replace=replace).squeeze()
+        inds = self._stratified_indices(dfs, ns, weights, n_repeats=1).squeeze()
         return self._aggregate_results(
             self._data.loc[inds],
             count_column,
@@ -122,7 +120,6 @@ class StructuredSampler:
         count_column: Optional[str] = None,
         bin_column: Optional[Union[str, List[str]]] = None,
         weight_column: Optional[str] = None,
-        replace: Optional[bool] = True,
     ):
         """Repeated sampling of counts from a dataframe with the same parameters.
 
@@ -146,8 +143,6 @@ class StructuredSampler:
             Optional, default is None.
         weight_column : str, optional
             Column to use for sample weighting. Optional, default is None.
-        replace : bool, optional
-            Chooses whether to sample with replacement, by default True
         seed : int, optional
             Random seed value, by default None
 
@@ -163,10 +158,11 @@ class StructuredSampler:
         if count_column is None:
             count_column = self._count_column
             if count_column is None:
-                raise ValueError("count_column must be specified here or in the constructor.")
+                msg = "Count_column must be specified here or in the constructor."
+                raise ValueError(msg)
 
         dfs, ns, weights = self._build_stratification(n_sample, bin_column, weight_column)
-        inds = self._stratified_indices(dfs, ns, weights, n_repeat, replace)
+        inds = self._stratified_indices(dfs, ns, weights, n_repeat)
         dfs_to_concat = []
         trial_column = 'trials'
         while trial_column in self._data.columns:
@@ -253,7 +249,6 @@ class StructuredSampler:
         ns,
         weights,
         n_repeats,
-        replace,
     ):
         "Sample indices from a list of dataframes."
         indices = []
@@ -264,7 +259,7 @@ class StructuredSampler:
                 self._rng.choice(
                     df.index.values,
                     size=(n_repeats, nn),
-                    replace=replace,
+                    replace=True,
                     p=w,
                 )
             )
